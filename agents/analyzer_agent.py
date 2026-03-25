@@ -1,10 +1,13 @@
 # agents/analyzer_agent.py
 # Reads transcript and extracts action items, decisions, and summary
+# Includes: retry + validation + storage + caching
 
 import os
 import sys
 import json
 import time
+import hashlib
+from datetime import datetime
 from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -55,15 +58,63 @@ def clean_response(raw: str) -> str:
 
 
 # ─────────────────────────────────────────
-# Analyze transcript with GPT-4o (robust)
+# Generate hash for caching
+# ─────────────────────────────────────────
+def get_transcript_hash(text: str) -> str:
+    return hashlib.md5(text.encode()).hexdigest()
+
+
+# ─────────────────────────────────────────
+# Save analysis to file
+# ─────────────────────────────────────────
+def save_analysis_to_file(data: dict):
+    os.makedirs("outputs", exist_ok=True)
+
+    filename = datetime.now().strftime("outputs/meeting_%Y%m%d_%H%M%S.json")
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=2)
+
+    print(f"💾 Saved analysis to {filename}")
+
+
+# ─────────────────────────────────────────
+# Check cache
+# ─────────────────────────────────────────
+def load_from_cache(transcript_hash: str):
+    cache_file = f"outputs/cache_{transcript_hash}.json"
+
+    if os.path.exists(cache_file):
+        print("⚡ Using cached result (no API call)")
+        with open(cache_file, "r") as f:
+            return json.load(f)
+
+    return None
+
+
+# ─────────────────────────────────────────
+# Save to cache
+# ─────────────────────────────────────────
+def save_to_cache(transcript_hash: str, data: dict):
+    os.makedirs("outputs", exist_ok=True)
+
+    cache_file = f"outputs/cache_{transcript_hash}.json"
+
+    with open(cache_file, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+# ─────────────────────────────────────────
+# Analyze transcript with GPT-4o (robust + cache)
 # ─────────────────────────────────────────
 def analyze_transcript(labeled_transcript: str, retries: int = 3) -> dict:
-    """
-    Send transcript to GPT-4o and extract structured meeting insights.
-    Includes retry + validation for production reliability.
-    """
-
     print("🧠 Analyzing transcript with GPT-4o...")
+
+    # 🔥 Step 1: Check cache
+    transcript_hash = get_transcript_hash(labeled_transcript)
+    cached = load_from_cache(transcript_hash)
+    if cached:
+        return cached
 
     prompt = f"""
 You are an expert meeting analyst. Analyze the following meeting transcript and extract structured information.
@@ -102,14 +153,8 @@ Rules:
             response = gpt_client.chat.completions.create(
                 model=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
                 messages=[
-                    {
-                        "role": "system",
-                        "content": "You must return STRICT valid JSON only. No explanation."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
+                    {"role": "system", "content": "You must return STRICT valid JSON only."},
+                    {"role": "user", "content": prompt}
                 ],
                 temperature=0.1,
                 max_tokens=1000,
@@ -124,6 +169,13 @@ Rules:
                 print("✅ Analysis complete!")
                 print("\n--- ANALYSIS RESULT ---")
                 print(json.dumps(parsed, indent=2))
+
+                # 💾 Save results
+                save_analysis_to_file(parsed)
+
+                # ⚡ Save cache
+                save_to_cache(transcript_hash, parsed)
+
                 return parsed
 
             print(f"⚠️ Invalid JSON (attempt {attempt + 1}/{retries})")
