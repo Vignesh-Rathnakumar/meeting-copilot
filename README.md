@@ -1,6 +1,23 @@
 # 🤖 Meeting Copilot
-
+<p align="center">
+  <img src="assets/upload.png" width="800"/>
+</p>
 An AI-powered meeting assistant that transcribes audio, extracts insights, creates tasks, and automates follow-ups.
+
+---
+
+
+## 📸 Demo
+
+### 🧾 Upload & Process Meeting
+<p align="center">
+  <img src="assets/upload.png" width="800"/>
+</p>
+
+### 📊 Analysis Results
+<p align="center">
+  <img src="assets/analysis.png" width="800"/>
+</p>
 
 ## Features
 
@@ -422,4 +439,4 @@ Built with:
 
 ---
 
-**Made with ❤️ by the Meeting Copilot Team**
+Built by Vignesh Rathnakumar
