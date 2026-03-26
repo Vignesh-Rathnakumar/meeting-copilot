@@ -82,7 +82,7 @@ except Exception as e:
     print(f"   ❌ agents.orchestrator: {e}")
 
 try:
-    from utils.azure_clients import gpt_client, transcribe_client, blob_client
+    from utils.azure_clients import get_gpt_client, get_transcribe_client, get_blob_client
     print("   ✅ utils.azure_clients")
 except Exception as e:
     errors.append(f"Failed to import Azure clients: {e}")
@@ -114,9 +114,10 @@ print("\n7. Azure connection (optional test):")
 test_azure = input("   Test Azure connections? (y/N): ").lower().strip()
 if test_azure == 'y':
     try:
-        from utils.azure_clients import gpt_client
+        from utils.azure_clients import get_gpt_client
         # Simple health check request
         model = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
+        gpt_client = get_gpt_client()
         response = gpt_client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": "Hello"}],

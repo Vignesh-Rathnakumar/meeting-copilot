@@ -4,6 +4,7 @@
 import os
 import json
 import base64
+from typing import Optional
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.azure_clients import transcribe_client, get_container_client
+from utils.azure_clients import get_transcribe_client, get_container_client
 
 load_dotenv()
 
@@ -46,6 +46,7 @@ def transcribe_audio(file_path: str) -> dict:
     print(f"🎙️ Transcribing: {file_path.name} ...")
 
     with open(file_path, "rb") as audio_file:
+        transcribe_client = get_transcribe_client()
         response = transcribe_client.audio.transcriptions.create(
             model=os.getenv("AZURE_TRANSCRIBE_DEPLOYMENT"),
             file=audio_file,

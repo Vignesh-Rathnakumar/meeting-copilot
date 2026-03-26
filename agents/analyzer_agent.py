@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.azure_clients import gpt_client
+from utils.azure_clients import get_gpt_client
 
 load_dotenv()
 
@@ -150,6 +150,7 @@ Rules:
 
     for attempt in range(retries):
         try:
+            gpt_client = get_gpt_client()
             response = gpt_client.chat.completions.create(
                 model=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
                 messages=[

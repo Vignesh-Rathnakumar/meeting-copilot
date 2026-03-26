@@ -2,4 +2,6 @@
 venv/
 __pycache__/
 *.pyc
+.DS_Storeoutputs/
+temp_uploads/
 .DS_Store
