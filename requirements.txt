@@ -1,0 +1,45 @@
+# Core Dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+requests==2.31.0
+
+# Azure OpenAI & Transcription
+openai==1.6.1
+azure-identity==1.15.0
+azure-storage-blob==12.19.0
+
+# RAG / Vector Database
+chromadb==0.4.22
+sentence-transformers==2.2.2
+
+# Gmail Integration
+google-auth==2.23.4
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.108.0
+
+# Notion Integration
+notion-client==2.2.2
+
+# Dashboard / UI
+streamlit==1.29.0
+
+# Optional: Testing & Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.1  # for async testing
+
+# Optional: Data Processing
+numpy==1.24.3  # often needed by sentence-transformers
+
+# Note: torch will be installed automatically as a dependency of sentence-transformers.
+# If you need a specific torch version (e.g., CPU-only), install separately:
+#   pip install torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu
+# For GPU (CUDA), use appropriate torch package from pytorch.org
+
+# Notes:
+# - For production, consider pinning exact versions from `pip freeze`
+# - Some packages may require system dependencies (e.g., libssl-dev for Azure)
