@@ -5,3 +5,4 @@ __pycache__/
 .DS_Storeoutputs/
 temp_uploads/
 .DS_Store
+outputs/
