@@ -7,8 +7,12 @@ import sys
 import json
 import time
 import hashlib
+import logging
 from datetime import datetime
 from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -75,7 +79,7 @@ def save_analysis_to_file(data: dict):
     with open(filename, "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"💾 Saved analysis to {filename}")
+    logger.info(f"💾 Saved analysis to {filename}")
 
 
 # ─────────────────────────────────────────
@@ -85,7 +89,7 @@ def load_from_cache(transcript_hash: str):
     cache_file = f"outputs/cache_{transcript_hash}.json"
 
     if os.path.exists(cache_file):
-        print("⚡ Using cached result (no API call)")
+        logger.info("⚡ Using cached result (no API call)")
         with open(cache_file, "r") as f:
             return json.load(f)
 
@@ -108,7 +112,7 @@ def save_to_cache(transcript_hash: str, data: dict):
 # Analyze transcript with GPT-4o (robust + cache)
 # ─────────────────────────────────────────
 def analyze_transcript(labeled_transcript: str, retries: int = 3) -> dict:
-    print("🧠 Analyzing transcript with GPT-4o...")
+    logger.info("🧠 Analyzing transcript with GPT-4o...")
 
     # 🔥 Step 1: Check cache
     transcript_hash = get_transcript_hash(labeled_transcript)
@@ -167,9 +171,9 @@ Rules:
             parsed = safe_json_parse(cleaned)
 
             if parsed and validate_schema(parsed):
-                print("✅ Analysis complete!")
-                print("\n--- ANALYSIS RESULT ---")
-                print(json.dumps(parsed, indent=2))
+                logger.info("✅ Analysis complete!")
+                logger.info("\n--- ANALYSIS RESULT ---")
+                logger.info(json.dumps(parsed, indent=2))
 
                 # 💾 Save results
                 save_analysis_to_file(parsed)
@@ -179,10 +183,10 @@ Rules:
 
                 return parsed
 
-            print(f"⚠️ Invalid JSON (attempt {attempt + 1}/{retries})")
+            logger.warning(f"⚠️ Invalid JSON (attempt {attempt + 1}/{retries})")
 
         except Exception as e:
-            print(f"⚠️ Error (attempt {attempt + 1}/{retries}): {e}")
+            logger.warning(f"⚠️ Error (attempt {attempt + 1}/{retries}): {e}")
 
         time.sleep(1)
 
@@ -203,5 +207,5 @@ Speaker B: No objections from my side. Let's go ahead with the April launch.
 
     result = analyze_transcript(test_transcript)
 
-    print("\n✅ Full Result:")
-    print(result)
+    logger.info("\n✅ Full Result:")
+    logger.info(result)

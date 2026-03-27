@@ -3,7 +3,11 @@
 
 import os
 import sys
+import logging
 from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -224,7 +228,7 @@ def send_meeting_summary(
         return result
     else:
         # Fallback: print to console
-        print(f"\n⚠️  Gmail credentials not found. Printing email preview instead...")
+        logger.warning(f"\n⚠️  Gmail credentials not found. Printing email preview instead...")
         print_email_preview(
             to=email_recipients,
             subject=email_content["subject"],
@@ -238,7 +242,7 @@ def send_meeting_summary(
 
 
 if __name__ == "__main__":
-    print("Testing email agent with sample analysis...\n")
+    logger.info("Testing email agent with sample analysis...\n")
 
     load_dotenv()
 
@@ -273,11 +277,11 @@ if __name__ == "__main__":
         recipients=["recipient1@example.com", "recipient2@example.com"]  # Override defaults
     )
 
-    print("\n📊 Email Result:")
-    print(json.dumps(result, indent=2))
+    logger.info("\n📊 Email Result:")
+    logger.info(json.dumps(result, indent=2))
 
     if not result["sent"]:
-        print("\n💡 Tip: Configure Gmail credentials to actually send emails:")
-        print("   1. Go to Google Cloud Console")
-        print("   2. Create OAuth 2.0 credentials")
-        print("   3. Save as gmail_credentials.json in project root")
+        logger.info("\n💡 Tip: Configure Gmail credentials to actually send emails:")
+        logger.info("   1. Go to Google Cloud Console")
+        logger.info("   2. Create OAuth 2.0 credentials")
+        logger.info("   3. Save as gmail_credentials.json in project root")

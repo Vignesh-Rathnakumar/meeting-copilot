@@ -3,7 +3,11 @@
 
 import os
 import sys
+import logging
 from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -26,10 +30,10 @@ def create_tasks(action_items: list, meeting_data: dict) -> dict:
         Dictionary with task creation results: {task_description: task_url or None}
     """
     if not action_items:
-        print("⚠️  No action items to create tasks from.")
+        logger.warning("⚠️  No action items to create tasks from.")
         return {}
 
-    print(f"\n📋 Creating {len(action_items)} tasks from action items...")
+    logger.info(f"\n📋 Creating {len(action_items)} tasks from action items...")
 
     results = {}
     created_count = 0
@@ -45,8 +49,8 @@ def create_tasks(action_items: list, meeting_data: dict) -> dict:
     # google_available = all([...])
 
     if not notion_available:
-        print("⚠️  Notion credentials not configured. Tasks will not be created.")
-        print("   Set NOTION_API_KEY and NOTION_DATABASE_ID in .env to enable task creation.")
+        logger.warning("⚠️  Notion credentials not configured. Tasks will not be created.")
+        logger.warning("   Set NOTION_API_KEY and NOTION_DATABASE_ID in .env to enable task creation.")
         for item in action_items:
             results[item.get("task", "Untitled")] = None
         return results
@@ -57,7 +61,7 @@ def create_tasks(action_items: list, meeting_data: dict) -> dict:
         deadline = item.get("deadline", "Not specified")
         priority = item.get("priority", "Medium")
 
-        print(f"  {i}. Creating task: {task_desc[:50]}... (owner: {owner or 'Unassigned'})")
+        logger.info(f"  {i}. Creating task: {task_desc[:50]}... (owner: {owner or 'Unassigned'})")
 
         try:
             # Create task in Notion
@@ -74,17 +78,17 @@ def create_tasks(action_items: list, meeting_data: dict) -> dict:
                 failed_count += 1
 
         except Exception as e:
-            print(f"    ❌ Failed to create task: {e}")
+            logger.error(f"    ❌ Failed to create task: {e}")
             results[task_desc] = {"url": None, "error": str(e)}
             failed_count += 1
 
-    print(f"\n✅ Task creation complete: {created_count} created, {failed_count} failed\n")
+    logger.info(f"\n✅ Task creation complete: {created_count} created, {failed_count} failed\n")
 
     return results
 
 
 if __name__ == "__main__":
-    print("🧪 Testing task agent with sample action items...\n")
+    logger.info("🧪 Testing task agent with sample action items...\n")
 
     # Ensure .env is loaded
     load_dotenv()
@@ -112,9 +116,9 @@ if __name__ == "__main__":
 
     results = create_tasks(test_action_items, test_meeting_data)
 
-    print("\n📊 Results:")
+    logger.info("\n📊 Results:")
     for task, result in results.items():
         if result.get("url"):
-            print(f"  ✅ {task}: {result['url']}")
+            logger.info(f"  ✅ {task}: {result['url']}")
         else:
-            print(f"  ❌ {task}: {result.get('error', 'Failed')}")
+            logger.info(f"  ❌ {task}: {result.get('error', 'Failed')}")

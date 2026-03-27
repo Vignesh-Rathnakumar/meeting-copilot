@@ -29,6 +29,8 @@ An AI-powered meeting assistant that transcribes audio, extracts insights, creat
 - **FastAPI Backend** - RESTful API for all operations
 - **Streamlit Dashboard** - Beautiful, easy-to-use web interface
 
+**Note:** Sample test audio files are not included in the repository. Please provide your own audio files for testing.
+
 ## Architecture
 
 ```
@@ -94,6 +96,19 @@ AZURE_TRANSCRIBE_DEPLOYMENT=gpt-4o-transcribe
 # ============================================
 AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=...
 AZURE_STORAGE_CONTAINER_NAME=meetings
+
+# ============================================
+# API Authentication (Required)
+# ============================================
+# Generate a secure random key: openssl rand -hex 32
+API_KEY=your-secret-api-key-here
+
+# ============================================
+# CORS Configuration (Optional)
+# ============================================
+# Comma-separated list of allowed origins for CORS
+# Default: http://localhost:8501
+ALLOWED_ORIGINS=http://localhost:8501
 
 # ============================================
 # Optional: Gmail Integration
@@ -186,6 +201,7 @@ Full interactive documentation: http://localhost:8000/docs
 ```bash
 curl -X POST "http://localhost:8000/process" \
   -H "accept: application/json" \
+  -H "X-API-Key: your-api-key-here" \
   -F "audio=@meeting.wav" \
   -F "send_email=false" \
   -F "create_tasks=true"
@@ -223,7 +239,7 @@ meeting-copilot/
 │   └── task_agent.py          # Task creation from action items
 ├── integrations/
 │   ├── gmail.py               # Gmail API client
-│   ├── google_calendar.py     # Google Tasks API (stub)
+│   ├── google_calendar.py     # Google Tasks API (coming soon)
 │   └── notion.py              # Notion API client
 ├── memory/
 │   └── rag.py                 # ChromaDB + sentence-transformers RAG
@@ -292,7 +308,7 @@ python agents/orchestrator.py
 
 1. Start API: `uvicorn main:app --reload`
 2. Open dashboard: `streamlit run dashboard/app.py`
-3. Upload `test_meeting.wav` (provided in repo)
+3. Upload your own audio file (e.g., `meeting.wav`)
 4. Verify:
    - Transcription appears
    - Analysis extracted correctly
@@ -311,6 +327,8 @@ python agents/orchestrator.py
 | `AZURE_TRANSCRIBE_DEPLOYMENT` | Yes | Transcription model (gpt-4o-transcribe) |
 | `AZURE_STORAGE_CONNECTION_STRING` | Yes | Blob storage connection string |
 | `AZURE_STORAGE_CONTAINER_NAME` | Yes | Container name (default: `meetings`) |
+| `API_KEY` | Yes | API key for endpoint authentication (generate a secure random string) |
+| `ALLOWED_ORIGINS` | No | Comma-separated CORS allowed origins (default: `http://localhost:8501`) |
 | `NOTION_API_KEY` | No | Notion integration token (optional) |
 | `NOTION_DATABASE_ID` | No | Notion database ID (optional) |
 

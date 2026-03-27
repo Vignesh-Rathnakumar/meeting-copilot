@@ -2,6 +2,7 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-dotenv==1.0.0
+python-multipart==0.0.9
 pydantic>=2.7.4,<3.0.0
 pydantic-settings>=2.1.0
 requests==2.31.0
@@ -30,7 +31,9 @@ streamlit==1.29.0
 # Testing & Development
 pytest==7.4.3
 pytest-asyncio==0.21.1
-httpx>=0.25.2
+# httpx version must be compatible with starlette (pinned by FastAPI)
+# FastAPI 0.104.1 requires starlette >=0.27.0,<0.28.0 which requires httpx>=0.23.0,<0.24.0
+httpx>=0.23.0,<0.24.0
 
 # Data Processing
 numpy==1.24.3

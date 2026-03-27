@@ -3,8 +3,12 @@
 
 import os
 import sys
+import logging
 from pathlib import Path
 from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger(__name__)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -31,7 +35,7 @@ def upload_audio(file_path: str) -> str:
             overwrite=True
         )
 
-    print(f"✅ Uploaded: {blob_name}")
+    logger.info(f"✅ Uploaded: {blob_name}")
     return blob_name
 
 
@@ -43,7 +47,7 @@ def transcribe_audio(file_path: str) -> dict:
 
     file_path = Path(file_path)
 
-    print(f"🎙️ Transcribing: {file_path.name} ...")
+    logger.info(f"🎙️ Transcribing: {file_path.name} ...")
 
     with open(file_path, "rb") as audio_file:
         transcribe_client = get_transcribe_client()
@@ -72,7 +76,7 @@ def transcribe_audio(file_path: str) -> dict:
 
     else:
         labeled_transcript = response_dict.get("text", "")
-        print("⚠️  No speaker labels — using plain transcript")
+        logger.warning("⚠️  No speaker labels — using plain transcript")
 
     result = {
         "file_name": file_path.name,
@@ -81,10 +85,10 @@ def transcribe_audio(file_path: str) -> dict:
         "duration_seconds": response_dict.get("duration", None),
     }
 
-    print("✅ Transcription complete!")
-    print("\n--- TRANSCRIPT PREVIEW ---")
-    print(labeled_transcript[:500])
-    print("...")
+    logger.info("✅ Transcription complete!")
+    logger.info("\n--- TRANSCRIPT PREVIEW ---")
+    logger.info(labeled_transcript[:500])
+    logger.info("...")
 
     return result
 
@@ -107,11 +111,11 @@ if __name__ == "__main__":
     test_file = "test_meeting.wav"
 
     if not os.path.exists(test_file):
-        print("⚠️  No test audio file found!")
-        print("👉 Add a file named 'test_meeting.wav' in the project folder")
+        logger.warning("⚠️  No test audio file found!")
+        logger.info("👉 Add a file named 'test_meeting.wav' in the project folder")
 
     else:
         result = process_audio(test_file)
 
-        print("\n✅ Full Result:")
-        print(result)
+        logger.info("\n✅ Full Result:")
+        logger.info(result)

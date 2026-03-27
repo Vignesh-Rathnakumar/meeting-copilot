@@ -1,6 +1,5 @@
 # integrations/google_calendar.py
-# Google Calendar / Tasks API integration (stub - optional)
-# Notion is the primary task system. Use this if you prefer Google Tasks.
+# Stub — not yet implemented. Planned: create Google Calendar events from meeting action items.
 
 import os
 from dotenv import load_dotenv
