@@ -440,7 +440,7 @@ MIT License - feel free to use for personal or commercial projects.
 ## Contributing
 
 Contributions welcome! Please:
-1. Fork the repo
+1. Fork the repos
 2. Create a feature branch
 3. Make changes with tests
 4. Submit a pull requests
